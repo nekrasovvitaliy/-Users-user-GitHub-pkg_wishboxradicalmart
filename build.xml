@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="pkg_wishboxradicalmart" default="make" basedir=".">
+
+	<target name="make" description="Build the Joomla package.">
+		<delete quiet="yes">
+			<fileset dir=".">
+				<include name="pkg_wishboxradicalmart.zip" />
+			</fileset>
+		</delete>
+
+		<zip destfile="lib_wishboxradicalmart.zip">
+			<fileset dir="./lib_wishboxradicalmart">
+				<include name="language/**" />
+				<include name="src/**" />
+				<include name="lib_wishboxradicalmart.xml" />
+			</fileset>
+		</zip>
+
+		<zip destfile="pkg_wishboxradicalmart.zip">
+			<fileset dir=".">
+				<include name="lib_wishboxradicalmart.zip" />
+				<include name="language/**" />
+				<include name="pkg_wishboxradicalmart.xml" />
+			</fileset>
+		</zip>
+
+		<delete quiet="yes">
+			<fileset dir=".">
+				<include name="lib_wishboxradicalmart.zip" />
+			</fileset>
+		</delete>
+	</target>
+</project>
