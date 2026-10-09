@@ -4,7 +4,7 @@
  * @license         GNU General Public License version 2 or later;
  */
 
-namespace WishboxRadicalMartLibrary\Service;
+namespace WishboxRadicalMartLibrary\Service\Product;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die;
@@ -15,16 +15,16 @@ defined('_JEXEC') or die;
  *
  * @since 1.0.0
  */
-interface WishboxRadicalMartOrderServiceAwareInterface
+interface ProductServiceAwareInterface
 {
 	/**
-	 * Set the Wishbox RadicalMart Order service.
+	 * Set the WishBox RadicalMart product service.
 	 *
-	 * @param   WishboxRadicalMartOrderService  $wishboxRadicalMartOrderService  RadicalMart order service
+	 * @param   ProductService  $productService  RadicalMart product service.
 	 *
 	 * @return void
 	 *
 	 * @since 1.0.0
 	 */
-	public function setWishboxRadicalMartOrderService(WishboxRadicalMartOrderService $wishboxRadicalMartOrderService): void;
+	public function setProductService(ProductService $productService): void;
 }

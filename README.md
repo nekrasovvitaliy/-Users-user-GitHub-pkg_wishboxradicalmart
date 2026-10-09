@@ -9,16 +9,16 @@ Joomla-пакет устанавливает библиотеку `lib_wishboxra
 
 ## Сервис заказов
 
-Класс `WishboxRadicalMartLibrary\Service\WishboxRadicalMartOrderService` записывает значение в секцию `data` реестра `shipping` заказа:
+Класс `WishboxRadicalMartLibrary\Service\Order\OrderService` записывает значение в секцию `data` реестра `shipping` заказа:
 
 ```php
-use WishboxRadicalMartLibrary\Service\WishboxRadicalMartOrderService;
+use WishboxRadicalMartLibrary\Service\Order\ProductService;
 
-$orderService = new WishboxRadicalMartOrderService();
+$orderService = new ProductService();
 $orderService->setShippingDataValue($orderId, 'track_number', $trackNumber);
 ```
 
-Если сервис используется через `WishboxRadicalMartOrderServiceAwareTrait`, создавший объект код должен предварительно внедрить его методом `setWishboxRadicalMartOrderService()`.
+Если сервис используется через `ProductServiceAwareTrait`, создавший объект код должен предварительно внедрить его методом `setOrderService()`.
 
 ## Сборка
 

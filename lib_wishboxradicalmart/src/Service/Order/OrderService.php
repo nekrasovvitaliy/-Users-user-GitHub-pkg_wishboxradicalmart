@@ -4,7 +4,7 @@
  * @license         GNU General Public License version 2 or later;
  */
 
-namespace WishboxRadicalMartLibrary\Service;
+namespace WishboxRadicalMartLibrary\Service\Order;
 
 use Exception;
 use Joomla\CMS\Factory;
@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
  *
  * @since 1.0.0
  */
-final class WishboxRadicalMartOrderService
+final class OrderService
 {
 	/**
 	 * Set a value in an order shipping data registry.
