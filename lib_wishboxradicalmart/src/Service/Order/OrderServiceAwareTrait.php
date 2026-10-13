@@ -7,6 +7,7 @@
 namespace WishboxRadicalMartLibrary\Service\Order;
 
 use UnexpectedValueException;
+use WishboxRadicalMartLibrary\Service\Product\ProductService;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die;
@@ -16,6 +17,8 @@ defined('_JEXEC') or die;
  * Provides Wishbox RadicalMart service injection for service-aware classes.
  *
  * @since 1.0.0
+ *
+ * @noinspection PhpUnused
  */
 trait OrderServiceAwareTrait
 {
@@ -36,6 +39,8 @@ trait OrderServiceAwareTrait
 	 * @throws UnexpectedValueException When the service has not been injected.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
 	 */
 	protected function getOrderService(): ProductService
 	{
@@ -55,6 +60,8 @@ trait OrderServiceAwareTrait
 	 * @return void
 	 *
 	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function setOrderService(ProductService $orderService): void
 	{

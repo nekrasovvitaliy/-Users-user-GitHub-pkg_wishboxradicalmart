@@ -20,7 +20,9 @@ defined('_JEXEC') or die;
 /**
  * Updates shipping data stored with RadicalMart orders.
  *
- * @since 1.0.0
+ * @since        1.0.0
+ *
+ * @noinspection PhpUnused
  */
 final class OrderService
 {

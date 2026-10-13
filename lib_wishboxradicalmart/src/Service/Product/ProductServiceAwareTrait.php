@@ -16,6 +16,8 @@ defined('_JEXEC') or die;
  * Provides Wishbox RadicalMart service injection for service-aware classes.
  *
  * @since 1.0.0
+ *
+ * @noinspection PhpUnused
  */
 trait ProductServiceAwareTrait
 {
@@ -36,6 +38,8 @@ trait ProductServiceAwareTrait
 	 * @throws UnexpectedValueException When the service has not been injected.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
 	 */
 	protected function getProductService(): ProductService
 	{
@@ -55,6 +59,8 @@ trait ProductServiceAwareTrait
 	 * @return void
 	 *
 	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function setProductService(ProductService $productService): void
 	{

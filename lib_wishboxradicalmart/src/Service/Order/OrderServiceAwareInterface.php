@@ -6,6 +6,8 @@
 
 namespace WishboxRadicalMartLibrary\Service\Order;
 
+use WishboxRadicalMartLibrary\Service\Product\ProductService;
+
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -14,6 +16,8 @@ defined('_JEXEC') or die;
  * Defines the contract for classes that depend on the Wishbox RadicalMart order service.
  *
  * @since 1.0.0
+ *
+ * @noinspection PhpUnused
  */
 interface OrderServiceAwareInterface
 {
@@ -25,6 +29,8 @@ interface OrderServiceAwareInterface
 	 * @return void
 	 *
 	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function setOrderService(ProductService $orderService): void;
 }

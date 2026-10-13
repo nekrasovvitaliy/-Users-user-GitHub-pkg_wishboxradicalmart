@@ -11,9 +11,11 @@ defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * Defines the contract for classes that depend on the Wishbox RadicalMart order service.
+ * Defines the contract for classes that depend on the Wishbox RadicalMart product service.
  *
  * @since 1.0.0
+ *
+ * @noinspection PhpUnused
  */
 interface ProductServiceAwareInterface
 {
@@ -25,6 +27,8 @@ interface ProductServiceAwareInterface
 	 * @return void
 	 *
 	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function setProductService(ProductService $productService): void;
 }
