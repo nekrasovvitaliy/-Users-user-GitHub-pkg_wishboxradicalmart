@@ -6,8 +6,6 @@
 
 namespace WishboxRadicalMartLibrary\Service\Order;
 
-use WishboxRadicalMartLibrary\Service\Product\ProductService;
-
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -22,9 +20,20 @@ defined('_JEXEC') or die;
 interface OrderServiceAwareInterface
 {
 	/**
+	 * Get the WishBox RadicalMart order service.
+	 *
+	 * @return OrderService
+	 *
+	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
+	 */
+	public function getOrderService(): OrderService;
+
+	/**
 	 * Set the Wishbox RadicalMart Order service.
 	 *
-	 * @param   ProductService  $orderService  RadicalMart order service.
+	 * @param   OrderService  $orderService  RadicalMart order service.
 	 *
 	 * @return void
 	 *
@@ -32,5 +41,5 @@ interface OrderServiceAwareInterface
 	 *
 	 * @noinspection PhpUnused
 	 */
-	public function setOrderService(ProductService $orderService): void;
+	public function setOrderService(OrderService $orderService): void;
 }

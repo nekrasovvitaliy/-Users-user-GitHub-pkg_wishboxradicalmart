@@ -7,10 +7,13 @@
 namespace WishboxRadicalMartLibrary\Service\Order;
 
 use Exception;
+use InvalidArgumentException;
 use Joomla\CMS\Factory;
 use Joomla\Component\RadicalMart\Administrator\Extension\RadicalMartComponent;
+use Joomla\Component\RadicalMart\Administrator\Model\OrderModel;
 use Joomla\Component\RadicalMart\Administrator\Table\OrderTable;
 use Joomla\Registry\Registry;
+use RuntimeException;
 use UnexpectedValueException;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -18,7 +21,7 @@ defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * Updates shipping data stored with RadicalMart orders.
+ * Provides RadicalMart order operations.
  *
  * @since        1.0.0
  *
@@ -26,6 +29,49 @@ defined('_JEXEC') or die;
  */
 final class OrderService
 {
+	/**
+	 * Change the RadicalMart order status.
+	 *
+	 * @param   int  $orderId   RadicalMart order identifier.
+	 * @param   int  $statusId  RadicalMart status identifier.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 *
+	 * @since 1.0.0
+	 */
+	public function updateStatus(int $orderId, int $statusId): void
+	{
+		if ($orderId < 1)
+		{
+			throw new InvalidArgumentException('RadicalMart order ID must be greater than zero.');
+		}
+
+		if ($statusId < 1)
+		{
+			throw new InvalidArgumentException('RadicalMart status ID must be greater than zero.');
+		}
+
+		$app = Factory::getApplication();
+
+		/** @var RadicalMartComponent $radicalMartComponent */
+		$radicalMartComponent = $app->bootComponent('com_radicalmart');
+
+		/** @var OrderModel $radicalMartOrderModel */
+		$radicalMartOrderModel = $radicalMartComponent->getMVCFactory()
+			->createModel('Order', 'Administrator', ['ignore_request' => true]);
+
+		if (!$radicalMartOrderModel->updateStatus($orderId, $statusId))
+		{
+			$message = trim((string) $radicalMartOrderModel->getError());
+
+			throw new RuntimeException(
+				$message !== '' ? $message : 'RadicalMart order status could not be updated.'
+			);
+		}
+	}
+
 	/**
 	 * Set a value in an order shipping data registry.
 	 *

@@ -63,6 +63,38 @@ final class ProductService
 	}
 
 	/**
+	 * Get a product id by its code.
+	 *
+	 * @param   string  $code  Product code
+	 *
+	 * @return int
+	 *
+	 * @throws Exception
+	 *
+	 * @since        1.0.0
+	 *
+	 * @noinspection PhpUnused
+	 */
+	public function getIdByCode(string $code): int
+	{
+		$code = trim($code);
+
+		if ($code === '')
+		{
+			throw new InvalidArgumentException('RadicalMart product code must not be empty.');
+		}
+
+		$productTable = $this->createProductTable();
+
+		if (!$productTable->load(['code' => $code]))
+		{
+			throw new UnexpectedValueException('RadicalMart product not found by code: ' . $code, 404);
+		}
+
+		return (int) $productTable->id;
+	}
+
+	/**
 	 * Get the product stock quantity.
 	 *
 	 * @param   int  $productId  Product id
@@ -187,19 +219,19 @@ final class ProductService
 	 *
 	 * @throws Exception
 	 *
-	 * @since 1.0.0
+	 * @since        1.0.0
 	 *
 	 * @noinspection PhpUnused
 	 */
 	public function getProducts(
 		string $externalProductIdField,
 		string $currencyCode = 'RUB',
-		float $priceRatio = 1.0,
-		array $productIds = []
+		float  $priceRatio = 1.0,
+		array  $productIds = []
 	): array
 	{
 		$externalProductIdField = trim($externalProductIdField);
-		$currencyCode = strtoupper(trim($currencyCode));
+		$currencyCode           = strtoupper(trim($currencyCode));
 
 		if ($externalProductIdField === '')
 		{
@@ -216,9 +248,9 @@ final class ProductService
 			throw new InvalidArgumentException('Product price ratio must not be negative.');
 		}
 
-		$currency = PriceHelper::getCurrency($currencyCode);
+		$currency             = PriceHelper::getCurrency($currencyCode);
 		$resolvedCurrencyCode = strtoupper(trim((string) ($currency['code'] ?? '')));
-		$currencyGroup = trim((string) ($currency['group'] ?? ''));
+		$currencyGroup        = trim((string) ($currency['group'] ?? ''));
 
 		if ($resolvedCurrencyCode !== $currencyCode || $currencyGroup === '')
 		{
@@ -233,15 +265,13 @@ final class ProductService
 		}
 		else
 		{
-			$productIds = array_values(
-				array_unique(
-					array_filter($productIds, static fn (int $productId): bool => $productId > 0)
-				)
-			);
+			$productIds = array_filter($productIds, static fn(int $productId): bool => $productId > 0)
+					|> array_unique(...)
+					|> array_values(...);
 		}
 
 		$productModel = $this->createProductModel();
-		$products = [];
+		$products     = [];
 
 		foreach ($productIds as $productId)
 		{
@@ -264,9 +294,9 @@ final class ProductService
 				$externalProductIdField,
 				0
 			);
-			$productAvailable = (int) ($product->state ?? 0) === 1
+			$productAvailable  = (int) ($product->state ?? 0) === 1
 				&& (int) ($product->in_stock ?? 0) === 1;
-			$stock = $productAvailable
+			$stock             = $productAvailable
 				? max(0, (int) floor($this->getStockQuantity($productId)))
 				: 0;
 
@@ -376,6 +406,130 @@ final class ProductService
 	}
 
 	/**
+	 * Set external product identifiers for products matched by code.
+	 *
+	 * @param   string                                              $fieldAlias  External identifier field alias.
+	 * @param   list<array{code: string, external_id: int}>         $productIds  Product codes and external identifiers.
+	 *
+	 * @return array{updated: int, skipped: int, failed: int, errors: list<string>} Update result.
+	 *
+	 * @throws InvalidArgumentException When the field alias is empty.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
+	 */
+	public function setExternalProductIdsByCode(string $fieldAlias, array $productIds): array
+	{
+		return $this->setExternalProductIds(
+			$fieldAlias,
+			$productIds,
+			'code',
+			$this->getIdByCode(...)
+		);
+	}
+
+	/**
+	 * Set external product identifiers for products matched by alias.
+	 *
+	 * @param   string                                        $fieldAlias  External identifier field alias.
+	 * @param   list<array{alias: string, external_id: int}>  $productIds  Product aliases and external identifiers.
+	 *
+	 * @return array{updated: int, skipped: int, failed: int, errors: list<string>} Update result.
+	 *
+	 * @throws InvalidArgumentException When the field alias is empty.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
+	 */
+	public function setExternalProductIdsByAlias(string $fieldAlias, array $productIds): array
+	{
+		return $this->setExternalProductIds(
+			$fieldAlias,
+			$productIds,
+			'alias',
+			$this->getIdByAlias(...)
+		);
+	}
+
+	/**
+	 * Set external identifiers using the supplied product identifier resolver.
+	 *
+	 * @param   string                            $fieldAlias        External identifier field alias.
+	 * @param   list<array<string, int|string>>  $productIds        Product identifiers and external identifiers.
+	 * @param   string                            $identifierKey     Product identifier array key.
+	 * @param   callable(string): int             $productIdResolver Product identifier resolver.
+	 *
+	 * @return array{updated: int, skipped: int, failed: int, errors: list<string>} Update result.
+	 *
+	 * @throws InvalidArgumentException When the field alias is empty.
+	 *
+	 * @since 1.0.0
+	 */
+	private function setExternalProductIds(
+		string   $fieldAlias,
+		array    $productIds,
+		string   $identifierKey,
+		callable $productIdResolver
+	): array
+	{
+		$fieldAlias = trim($fieldAlias);
+
+		if ($fieldAlias === '')
+		{
+			throw new InvalidArgumentException('RadicalMart product field alias must not be empty.');
+		}
+
+		$result = [
+			'updated' => 0,
+			'skipped' => 0,
+			'failed'  => 0,
+			'errors'  => [],
+		];
+
+		foreach ($productIds as $productIdData)
+		{
+			$productIdentifier = trim((string) ($productIdData[$identifierKey] ?? ''));
+			$externalProductId = (int) ($productIdData['external_id'] ?? 0);
+
+			if ($productIdentifier === '' || $externalProductId < 1)
+			{
+				$result['skipped']++;
+
+				continue;
+			}
+
+			try
+			{
+				$productId = $productIdResolver($productIdentifier);
+
+				if ($productId < 1)
+				{
+					$result['skipped']++;
+
+					continue;
+				}
+
+				$this->setProductFieldValue($productId, $fieldAlias, $externalProductId);
+				$result['updated']++;
+			}
+			catch (UnexpectedValueException)
+			{
+				$result['skipped']++;
+			}
+			catch (Throwable $throwable)
+			{
+				$result['failed']++;
+				$result['errors'][] = 'RadicalMart product '
+					. $productIdentifier . ': ' . $throwable->getMessage();
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Read the final product price in the requested currency group.
 	 *
 	 * @param   object  $product        RadicalMart product data.
@@ -389,7 +543,7 @@ final class ProductService
 	private function getProductPrice(object $product, string $currencyGroup, float $priceRatio): ?float
 	{
 		$prices = is_array($product->prices ?? null) ? $product->prices : [];
-		$price = $prices[$currencyGroup]['final'] ?? null;
+		$price  = $prices[$currencyGroup]['final'] ?? null;
 
 		if (!is_numeric($price))
 		{
