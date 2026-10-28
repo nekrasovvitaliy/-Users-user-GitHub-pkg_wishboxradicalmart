@@ -14,6 +14,7 @@ use Joomla\Component\RadicalMart\Administrator\Model\OrderModel;
 use Joomla\Component\RadicalMart\Administrator\Table\OrderTable;
 use Joomla\Registry\Registry;
 use RuntimeException;
+use stdClass;
 use UnexpectedValueException;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -70,6 +71,38 @@ final class OrderService
 				$message !== '' ? $message : 'RadicalMart order status could not be updated.'
 			);
 		}
+	}
+
+	/**
+	 * Get a RadicalMart order by identifier.
+	 *
+	 * @param   int  $orderId  RadicalMart order identifier.
+	 *
+	 * @return stdClass
+	 *
+	 * @throws Exception
+	 *
+	 * @since 1.0.0
+	 *
+	 * @noinspection PhpUnused
+	 */
+	public function getById(int $orderId): stdClass
+	{
+		if ($orderId < 1)
+		{
+			throw new InvalidArgumentException('RadicalMart order ID must be greater than zero.');
+		}
+
+		$app = Factory::getApplication();
+
+		/** @var RadicalMartComponent $radicalMartComponent */
+		$radicalMartComponent = $app->bootComponent('com_radicalmart');
+
+		/** @var OrderModel $orderModel */
+		$orderModel = $radicalMartComponent->getMVCFactory()
+			->createModel('Order', 'Administrator', ['ignore_request' => true]);
+
+		return $orderModel->getItem($orderId);
 	}
 
 	/**
